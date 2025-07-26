@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bq-query-generator"
+version = "0.1.0"
+description = "Generate BigQuery MERGE, TRUNCATE, and INSERT queries from schema JSON."
+authors = [{ name="Harsh Hingrajia" }]
+dependencies = ["jinja2"]
+
+[project.scripts]
+bq-query-generator = "cli.generate:main"
