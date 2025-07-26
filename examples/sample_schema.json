@@ -1,0 +1,14 @@
+[
+    {
+        "name": "MAXForecastDate",
+        "type": "DATE"
+    },
+    {
+        "name": "MINForecastDate",
+        "type": "DATE"
+    },
+    {
+        "name": "ID",
+        "type": "STRING"
+    }
+]

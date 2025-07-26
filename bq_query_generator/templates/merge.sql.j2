@@ -1,0 +1,51 @@
+MERGE INTO `{{ target_table }}` T
+USING (
+{% if custom_select_sql %}
+{{ custom_select_sql }}
+{% else %}
+  SELECT
+    {{ update_fields | map('quote_field') | join(',\n    ') }}
+    {% if add_metadata %}
+    , PartitionDate
+    , '{{ job_id }}' AS JobID
+    , CURRENT_TIMESTAMP() AS InsertDate
+    , CURRENT_TIMESTAMP() AS UpdateDate
+    , house_keeping.RunDate AS createDate
+    , house_keeping.RunStartTime AS LastUpdateTime
+    , house_keeping.WorkflowID
+    , house_keeping.WorkflowRunID
+    , 'Y' AS RowActiveFlag
+    , 'N' AS RowDeleteFlag
+    {% endif %}
+  FROM `{{ staging_table }}`
+  {% if add_metadata %}
+  JOIN (
+    SELECT 
+      JM.WorkflowID, 
+      JRD.WorkflowRunID, 
+      JRD.RunDate, 
+      JRD.RunStartTime
+    FROM `project.dataset.WorkflowRunDetail` JRD
+    INNER JOIN `project.dataset.WorkflowMaster` JM 
+      ON JRD.WorkflowID = JM.WorkflowID
+    WHERE JM.WorkflowName = '{{ dag_id }}' 
+      AND JRD.status = 'R' 
+    LIMIT 1
+  ) AS house_keeping ON 1=1
+  {% endif %}
+{% endif %}
+) AS S
+ON {{ on_condition or default_on_condition }}
+WHEN MATCHED THEN
+  UPDATE SET 
+    {% for field in update_fields %}
+    {{ field }} = S.{{ field }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+
+WHEN NOT MATCHED THEN
+  INSERT (
+    {{ all_fields | map('quote_field') | join(',\n    ') }}
+  )
+  VALUES (
+    {{ all_fields | map('prepend', 'S.') | join(',\n    ') }}
+  );
