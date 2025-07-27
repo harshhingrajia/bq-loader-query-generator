@@ -4,7 +4,6 @@
 🛠️ A lightweight Python-based plugin that generates BigQuery MERGE, TRUNCATE + LOAD, or INSERT SQL statements from JSON table schema definitions. Designed for data engineers and workflow automation in ELT pipelines.
 
 ### Features include:
-- Optional metadata fields
 - Custom `ON` conditions
 - Manual `SELECT` clause overrides
 - Modular Jinja templates
@@ -29,7 +28,7 @@ git clone https://github.com/harshhingrajia/bq-loader-query-generator.git
 cd bq-loader-query-generator
 ```
 
-### Create a virtual environment (optional but recommended)
+### 2. (Optional but recommended) Create and activate virtual environment
 
 ```bash
 python -m venv .venv
@@ -37,42 +36,56 @@ source .venv/bin/activate      # Linux/Mac
 # .venv\Scripts\activate       # Windows
 ```
 
-### Install dependencies
+### 3. Install project dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the generator
-#### Option 1: Using Python module directly
+### 4. Install the project in editable/development mode
 
 ```bash
-python -m bq_query_generator.cli.generate \
-  --schema path/to/schema.json \
-  --target_table project.dataset.final_table \
-  --staging_table project.dataset.staging_table \
-  --merge_keys ID,Date
+pip install -e .
 ```
 
-#### Option 2: Using CLI entry point (if installed)
+### 5. Run the generator
 
+#### Using CLI entry point
+
+##### Merge Command
 ```bash
 bq-query-generator \
-  --schema path/to/schema.json \
-  --target_table project.dataset.final_table \
-  --staging_table project.dataset.staging_table \
-  --merge_keys ID,Date
+  --mode merge \
+  --schema ./examples/sample_schema.json \
+  --merge_keys Sales_Id \
+  --output tests/sql/merge_generated.sql 
 ```
+
+##### Truncate and Load Command
+```bash
+bq-query-generator \
+    --mode truncate_load \
+    --schema ./examples/sample_schema.json \
+    --output tests/sql/truncate_load_generated.sql
+```
+
+##### Insert Command
+```bash
+bq-query-generator \
+    --mode insert \
+    --schema ./examples/sample_schema.json \
+    --output tests/sql/insert_generated.sql
+```
+
 
 ## 🛠 Command Line Options
 
-| Flag              | Description                              | Required |
-|-------------------|------------------------------------------|----------|
-| `--schema`        | Path to input JSON schema file           | ✅       |
-| `--target_table`  | BigQuery target table                    | ✅       |
-| `--staging_table` | BigQuery staging/source table            | ✅       |
-| `--merge_keys`    | Comma-separated list of merge key fields | ✅       |
-
+| Flag           | Description                                                 | Required        |
+| -------------- | ----------------------------------------------------------- | --------------- |
+| `--mode`       | Query generation mode (`merge`, `truncate_load`, `insert`)  | ✅              |
+| `--schema`     | Path to input JSON schema file (contains table & columns)   | ✅              |
+| `--merge_keys` | Comma-separated list of merge key fields (for `merge` only) | ✅ (merge only) |
+| `--output`     | Optional path to save generated SQL to a `.sql` file        | ❌              |
 
 ## 📁 Project Structure
 
@@ -81,39 +94,29 @@ bq-loader-query-generator/
 │
 ├── bq_query_generator/
 │   ├── __init__.py
-│   ├── cli/
-│   │   └── generate.py            # CLI entrypoint
-│   ├── generator.py               # Core logic for SQL generation
+│   ├── query_builder.py           # Core logic for SQL generation
 │   ├── utils.py                   # Utility functions and filters
 │   └── templates/
 │       ├── merge.sql.j2           # Jinja template for MERGE
 │       ├── insert.sql.j2          # Jinja template for INSERT
-│       └── truncate_insert.sql.j2 # Jinja template for TRUNCATE + INSERT
-│
-├── requirements.txt
+│       └── truncate_load.sql.j2   # Jinja template for TRUNCATE + INSERT
+├── cli/
+│   ├── generate_sql.py            # CLI entrypoint for query generation
+├── pyproject.toml
 ├── README.md
-```
-
-## 🧪 Running Tests
-If tests are located under tests/, run them using:
-
-```bash
-python -m unittest discover tests
+├── setup.py
 ```
 
 ## 📄 Example Schema File
 
 ```json
-[
-  { "name": "ID", "type": "STRING" },
-  { "name": "EmployeeName", "type": "STRING" },
-  { "name": "JoinDate", "type": "DATE" }
-]
+{
+  "target_table": "project_id.dataset.target_table",
+  "source_table": "project_id.dataset.source_table",
+  "schema": [
+    { "name": "ID", "type": "STRING" },
+    { "name": "EmployeeName", "type": "STRING" },
+    { "name": "JoinDate", "type": "DATE" }
+  ]
+}
 ```
-
-## 🧰 Planned Enhancements
-
-- 🔁 Support for additional SQL operations
-- 📝 YAML schema compatibility
-- 📅 Optional metadata configuration (e.g., insert timestamps, job IDs)
-

@@ -3,3 +3,5 @@
 *DS*
 
 *__pycache__*
+
+*.venv*

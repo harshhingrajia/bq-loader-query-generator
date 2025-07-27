@@ -9,7 +9,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'bq-query-generator = cli.generate:main',
+            'bq-query-generator = cli.generate_sql:main',
         ],
     },
 )

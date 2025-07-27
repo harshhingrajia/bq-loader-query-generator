@@ -6,12 +6,22 @@ def prepend(value, prefix):
     """Prepend prefix to a single value."""
     return f"{prefix}{value}"
 
-def prepend_filter(items, prefix):
-    """Prepend a prefix to each item in a list and return a formatted string."""
-    return ',\n    '.join(f"{prefix}{item}" for item in items)
+def format_assignment(pair):
+    """Format T.field = S.field."""
+    source, target = pair
+    return f"T.{target} = {source}"
+
+def zip_lists(a, b):
+    return zip(a, b)
+
+def build_on_condition(merge_keys):
+    """Build the ON condition for the MERGE statement."""
+    return " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
 
 def register_jinja_filters(env):
-    """Register all custom Jinja filters into the provided environment."""
+    """Register custom Jinja filters."""
     env.filters["quote_field"] = quote_field
     env.filters["prepend"] = prepend
-    env.filters["prepend_filter"] = prepend_filter
+    env.filters["zip"] = zip_lists
+    env.filters["format_assignment"] = format_assignment
+    env.filters["build_on_condition"] = build_on_condition
