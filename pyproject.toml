@@ -10,4 +10,4 @@ authors = [{ name="Harsh Hingrajia" }]
 dependencies = ["jinja2"]
 
 [project.scripts]
-bq-query-generator = "cli.generate:main"
+bq-query-generator = "cli.generate_sql:main"

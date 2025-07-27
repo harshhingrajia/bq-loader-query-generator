@@ -1,0 +1,10 @@
+-- Step 1: Delete all existing records from the target table
+TRUNCATE TABLE `{{ target_table }}`;
+
+-- Step 2: Insert fresh records from the source table
+INSERT INTO `{{ target_table }}` (
+  {{ all_fields | map('quote_field') | join(',\n  ') }}
+)
+SELECT
+  {{ all_fields | map('quote_field') | join(',\n  ') }}
+FROM `{{ source_table }}`;

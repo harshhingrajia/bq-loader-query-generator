@@ -1,0 +1,6 @@
+INSERT INTO `{{ target_table }}` (
+  {{ all_fields | map('quote_field') | join(',\n  ') }}
+)
+SELECT
+  {{ all_fields | map('quote_field') | join(',\n  ') }}
+FROM `{{ source_table }}`;

@@ -1,14 +1,39 @@
-[
-    {
-        "name": "MAXForecastDate",
-        "type": "DATE"
-    },
-    {
-        "name": "MINForecastDate",
-        "type": "DATE"
-    },
-    {
-        "name": "ID",
-        "type": "STRING"
-    }
-]
+{
+    "target_table": "project_id.my_dataset.target_table",
+    "source_table": "project_id.my_dataset.source_table",
+    "schema": [
+        {
+          "name": "Sales_Id",
+          "type": "STRING"
+        },
+        {
+          "name": "Region",
+          "type": "STRING"
+        },
+        {
+          "name": "Country",
+          "type": "STRING"
+        },
+        {
+          "name": "Product",
+          "type": "STRING"
+        },
+        {
+          "name": "Sales_Amount",
+          "type": "FLOAT"
+        },
+        {
+          "name": "Sales_Date",
+          "type": "DATE"
+        },
+        {
+          "name": "Sales_Channel",
+          "type": "STRING"
+        },
+        {
+          "name": "Last_Updated",
+          "type": "TIMESTAMP"
+        }
+      ]
+}
+
