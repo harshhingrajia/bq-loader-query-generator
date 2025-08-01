@@ -1,18 +1,18 @@
-MERGE INTO `{{ target_table }}` T
+MERGE INTO `{{ target_table }}` target
 USING (
   SELECT
     {{ all_fields | map('quote_field') | join(',\n    ') }}
   FROM `{{ source_table }}`
-) AS S
+) AS source
 ON {{ merge_keys | build_on_condition }}
 WHEN MATCHED THEN
   UPDATE SET
-    {{ update_fields | map('prepend', 'S.') | zip(update_fields) | map('format_assignment') | join(',\n    ') }}
+    {{ update_fields | map('prepend', 'source.') | zip(update_fields) | map('format_assignment') | join(',\n    ') }}
 
 WHEN NOT MATCHED THEN
   INSERT (
     {{ all_fields | map('quote_field') | join(',\n    ') }}
   )
   VALUES (
-    {{ all_fields | map('prepend', 'S.') | join(',\n    ') }}
+    {{ all_fields | map('prepend', 'source.') | join(',\n    ') }}
   );

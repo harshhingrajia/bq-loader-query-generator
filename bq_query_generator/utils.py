@@ -7,16 +7,16 @@ def prepend(value, prefix):
     return f"{prefix}{value}"
 
 def format_assignment(pair):
-    """Format T.field = S.field."""
+    """Format target.field = source.field."""
     source, target = pair
-    return f"T.{target} = {source}"
+    return f"target.{target} = {source}"
 
 def zip_lists(a, b):
     return zip(a, b)
 
 def build_on_condition(merge_keys):
     """Build the ON condition for the MERGE statement."""
-    return " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
+    return " AND ".join([f"target.{key} = source.{key}" for key in merge_keys])
 
 def register_jinja_filters(env):
     """Register custom Jinja filters."""
